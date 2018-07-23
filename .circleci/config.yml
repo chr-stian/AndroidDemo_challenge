@@ -13,16 +13,16 @@ references:
     persist_to_workspace:
       root: *workspace
       paths:
-        - mobile/build/intermediates
-        - mobile/build/outputs/androidTest-results
-        - mobile/build/outputs/apk
-        - mobile/build/outputs/code-coverage
-        - mobile/build/test-results
+        - app/build/intermediates
+        - app/build/outputs/androidTest-results
+        - app/build/outputs/apk
+        - app/build/outputs/code-coverage
+        - app/build/test-results
   persist_release_workspace: &persist_release_workspace
     persist_to_workspace:
       root: *workspace
       paths:
-        - mobile/build
+        - app/build
   attach_firebase_workspace: &attach_firebase_workspace
     attach_workspace:
       at: *workspace
@@ -56,7 +56,7 @@ references:
   decode_gservices_key: &decode_gservices_key
     run:
       name: Decode Google Services key
-      command: echo $GOOGLE_SERVICES_KEY | base64 -di > mobile/google-services.json
+      command: echo $GOOGLE_SERVICES_KEY | base64 -di > app/google-services.json
 
   # Google Cloud Service
 
