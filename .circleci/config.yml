@@ -1,17 +1,5 @@
 version: 2
 references:
-## Cache
-  cache_key: &cache_key
-  key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "mobile/build.gradle" }}
-  restore_cache: &restore_cache
-    restore_cache:
-      "<<": *cache_key
-  save_cache: &save_cache
-    save_cache:
-      "<<": *cache_key
-      paths:
-        - ~/.gradle
-        - ~/.m2
  ## Workspace
   workspace: &workspace
     ~/workspace
@@ -83,14 +71,18 @@ references:
 jobs:
   # Build debug APK for unit tests and an instrumented test APK
   build_debug:
-    "<<": *android_config
+    working_directory: *workspace
+    docker:
+      - image: circleci/android:api-27-alpha
+    environment:
+      TERM: dumb
+      _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
     steps:
       - checkout
-      - *restore_cache
       - run:
           name: Download dependencies
           command: ./gradlew androidDependencies
-      - *save_cache
       - *export_gservices_key
       - *decode_gservices_key
       - run:
@@ -102,7 +94,11 @@ jobs:
           destination: /apk/
 
   test_instrumented:
-    "<<": *gcloud_config
+    working_directory: *workspace
+    docker:
+      - image: google/cloud-sdk:latest
+    environment:
+      TERM: dumb
     steps:
       - *attach_debug_workspace
       - *export_gcloud_key
