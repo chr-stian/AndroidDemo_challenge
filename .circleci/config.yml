@@ -45,13 +45,13 @@ references:
         - firebase	
   # Docker
   android_config: &android_config
-  working_directory: *workspace
-  docker:
-    - image: circleci/android:api-27-alpha
-  environment:
-    TERM: dumb
-    _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
+    working_directory: *workspace
+    docker:
+      - image: circleci/android:api-27-alpha
+    environment:
+      TERM: dumb
+      _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
   gcloud_config: &gcloud_config
     working_directory: *workspace
     docker:
@@ -83,46 +83,46 @@ references:
 jobs:
   # Build debug APK for unit tests and an instrumented test APK
   build_debug:
-  <<: *android_config
-  steps:
-    - checkout
-    - *restore_cache
-    - run:
-        name: Download dependencies
-        command: ./gradlew androidDependencies
-    - *save_cache
-    - *export_gservices_key
-    - *decode_gservices_key
-    - run:
-        name: Gradle build (debug)
-        command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
-    - *persist_debug_workspace
-    - store_artifacts:
-        path: app/build/outputs/apk/
-        destination: /apk/
+    <<: *android_config
+    steps:
+      - checkout
+      - *restore_cache
+      - run:
+          name: Download dependencies
+          command: ./gradlew androidDependencies
+      - *save_cache
+      - *export_gservices_key
+      - *decode_gservices_key
+      - run:
+          name: Gradle build (debug)
+          command: ./gradlew -PciBuild=true :app:assembleDebug :app:assembleAndroidTest
+      - *persist_debug_workspace
+      - store_artifacts:
+          path: app/build/outputs/apk/
+          destination: /apk/
 
   test_instrumented:
- <<: *gcloud_config
-  steps:
-    - *attach_debug_workspace
-    - *export_gcloud_key
-    - *decode_gcloud_key
-    - run:
-        name: Set Google Cloud target project
-        command: gcloud config set project chris-challenge
-    - run:
-        name: Authenticate with Google Cloud
-        command: gcloud auth activate-service-account firebase-adminsdk-y4kxp@chris-challenge.iam.gserviceaccount.com --key-file ${HOME}/client-secret.json
-    - run:
-        name: Run instrumented test on Firebase Test Lab
-        command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/debug/app-debug.apk --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus5X,version=26,locale=en_US,orientation=portrait --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec --directories-to-pull=/sdcard/tmp --timeout 20m
-    - run:
-        name: Create directory to store test results
-        command: mkdir firebase
-    - *persist_firebase_workspace
-    - store_artifacts:
-        path: firebase/
-        destination: /firebase/
+    <<: *gcloud_config
+    steps:
+      - *attach_debug_workspace
+      - *export_gcloud_key
+      - *decode_gcloud_key
+      - run:
+          name: Set Google Cloud target project
+          command: gcloud config set project chris-challenge
+      - run:
+          name: Authenticate with Google Cloud
+          command: gcloud auth activate-service-account firebase-adminsdk-y4kxp@chris-challenge.iam.gserviceaccount.com --key-file ${HOME}/client-secret.json
+      - run:
+          name: Run instrumented test on Firebase Test Lab
+          command: gcloud firebase test android run --type instrumentation --app app/build/outputs/apk/debug/app-debug.apk --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus5X,version=26,locale=en_US,orientation=portrait --environment-variables coverage=true,coverageFile=/sdcard/tmp/code-coverage/connected/coverage.ec --directories-to-pull=/sdcard/tmp --timeout 20m
+      - run:
+          name: Create directory to store test results
+          command: mkdir firebase
+      - *persist_firebase_workspace
+      - store_artifacts:
+          path: firebase/
+          destination: /firebase/
 
 workflows:
   version: 2
