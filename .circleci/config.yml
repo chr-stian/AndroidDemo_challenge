@@ -1,6 +1,5 @@
 version: 2
 references:
-
 ## Cache
   cache_key: &cache_key
   key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "mobile/build.gradle" }}
@@ -13,9 +12,7 @@ references:
       paths:
         - ~/.gradle
         - ~/.m2
-		
  ## Workspace
-
   workspace: &workspace
     ~/workspace
   attach_debug_workspace: &attach_debug_workspace
@@ -45,8 +42,7 @@ references:
     persist_to_workspace:
       root: *workspace
       paths:
-        - firebase
-		
+        - firebase	
   # Docker
   android_config: &android_config
   working_directory: *workspace
@@ -56,14 +52,13 @@ references:
     TERM: dumb
     _JAVA_OPTIONS: "-Xmx2048m -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m"'
-	
   gcloud_config: &gcloud_config
     working_directory: *workspace
     docker:
       - image: google/cloud-sdk:latest
     environment:
       TERM: dumb
-		
+
   # Google Services
 
   export_gservices_key: &export_gservices_key
