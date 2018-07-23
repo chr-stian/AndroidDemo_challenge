@@ -6,9 +6,6 @@ references:
   attach_debug_workspace: &attach_debug_workspace
     attach_workspace:
       at: *workspace
-  attach_release_workspace: &attach_release_workspace
-    attach_workspace:
-      at: *workspace
   persist_debug_workspace: &persist_debug_workspace
     persist_to_workspace:
       root: *workspace
@@ -18,11 +15,6 @@ references:
         - app/build/outputs/apk
         - app/build/outputs/code-coverage
         - app/build/test-results
-  persist_release_workspace: &persist_release_workspace
-    persist_to_workspace:
-      root: *workspace
-      paths:
-        - app/build
   attach_firebase_workspace: &attach_firebase_workspace
     attach_workspace:
       at: *workspace
