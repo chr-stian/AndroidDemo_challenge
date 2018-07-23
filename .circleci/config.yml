@@ -5,10 +5,10 @@ references:
   key: cache-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle" }}-{{ checksum "mobile/build.gradle" }}
   restore_cache: &restore_cache
     restore_cache:
-      <<: *cache_key
+      "<<": *cache_key
   save_cache: &save_cache
     save_cache:
-      <<: *cache_key
+      "<<": *cache_key
       paths:
         - ~/.gradle
         - ~/.m2
@@ -83,7 +83,7 @@ references:
 jobs:
   # Build debug APK for unit tests and an instrumented test APK
   build_debug:
-    <<: *android_config
+    "<<": *android_config
     steps:
       - checkout
       - *restore_cache
@@ -102,7 +102,7 @@ jobs:
           destination: /apk/
 
   test_instrumented:
-    <<: *gcloud_config
+    "<<": *gcloud_config
     steps:
       - *attach_debug_workspace
       - *export_gcloud_key
