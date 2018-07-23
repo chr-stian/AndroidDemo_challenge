@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
 
-
 public class TestUtils {
 
     private static final String LOGIN = "login";
@@ -30,12 +29,15 @@ public class TestUtils {
             }
             return bo.toString();
         } catch (IOException e) {
+            e.printStackTrace();
             return "";
         }
     }
 
     public static List<String> getValidCredentials() {
         List<String> credentials = new ArrayList<String>();
+
+        //Connect to the URL with the valid user credentials
         URL url = null;
         try {
             url = new URL(URL);
@@ -55,12 +57,16 @@ public class TestUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String respuesta = readStream(in);
+
+            // Get the String from the InputStream
+            String jsonResponse = readStream(in);
 
             try {
-                JSONObject obj = new JSONObject(respuesta);
+                // Extract only the username and the password from the received json
+                JSONObject obj = new JSONObject(jsonResponse);
                 String username = obj.getJSONArray(RESULTS).getJSONObject(0).getJSONObject(LOGIN).getString(USERNAME);
                 String password = obj.getJSONArray(RESULTS).getJSONObject(0).getJSONObject(LOGIN).getString(PASSWORD);
+                // Put the valid username and password into a List
                 credentials.add(username);
                 credentials.add(password);
             } catch (JSONException e) {
@@ -70,9 +76,8 @@ public class TestUtils {
 
         } finally {
             urlConnection.disconnect();
+            // Return the List with two elements: username and password
             return credentials;
         }
-
     }
-
 }
